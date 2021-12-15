@@ -126,7 +126,7 @@ for (i in seq_along(along.with = bio_m$byear))
   print(paste("done:", i))
 }
 
-write_csv(as.data.frame(male), "bio_m_graph.csv") #save the list
+#write_csv(as.data.frame(male), "bio_m_graph.csv") #save the list
 
 #and then female
 female <- c()
@@ -135,7 +135,7 @@ for (i in seq_along(along.with = bio_f$byear))
   female <- c(female, bio_f$byear[i]:bio_f$dyear[i])
   print(paste("done:", i))
 }
-write_csv(as.data.frame(female), "bio_f_graph.csv")  #save the list
+#write_csv(as.data.frame(female), "bio_f_graph.csv")  #save the list
 
 #Now we need to reconstruct the dataframe with column "gender" and "ayear" (ayear = alive/active year)
 #Each entry represent one profile being active in that particular year
@@ -157,31 +157,39 @@ bio_plot <- rbind(bio_gm, bio_gf) #merge "bio_gm" and "bio_gf" together
 
 #########plotting graph#########
 
-ggplot() +
-  geom_histogram(bio_plot[bio_plot$gender == "M",], #for male
-                 mapping = aes(x = year),
-                 binwidth = 1,
-                 color = "blue", #line color 
-                 fill = "blue", #bar color
+options(scipen=999)#to avoid scientific notation
+
+#this is exported as "bio_summary.pdf"
+ggplot(bio_plot, aes(x = year)) +
+  geom_histogram(bio_plot[bio_plot$gender == "M",], #this is for male
+                  mapping = aes(fill = "blue", #color of interior
+                     color = "blue"), #color of line
+                 binwidth = 1, #scale of bin: 1 = normal
                  alpha = 0.1, #transparency
-                 position="identity") +
-  geom_histogram(bio_plot[bio_plot$gender == "F",], #for female
-                 mapping = aes(x = year),
+                 position="identity") + #I don't know what "identity" mean honestly...^_^
+  geom_histogram(bio_plot[bio_plot$gender == "F",], # this is for female, this comes later because it has to be on top
+                 mapping = aes(fill = "red", 
+                     color = "red"),
                  binwidth = 1,
-                 color = "red", 
-                 fill = "red",
                  alpha = 0.1,
                  position="identity") +
+  scale_fill_manual(name = "Gender",
+                    values = c("blue", "red"),
+                    labels = c("Male", "Female")) +
+  scale_color_manual(name = "Gender",
+                    values = c("blue", "red"),
+                    labels = c("Male", "Female")) + #these are for legends
   xlim(1900, 2021) + #set the limit of x-scale
-  labs(title = "Active (Alive) Profile of 'Who's Who' from 1900",
-       x = "Year",
-       y = "Number of Active Memberships",
-       caption = "Source: Webb-site 'Who's Who' database") +
+  labs(title = "Active (Alive) Profiles of 'Who's Who' from 1900", #heading of the graph
+       x = "Year", #name of x-axis
+       y = "Number of Active Profiles", #name of y-axis
+       caption = "Source: Webb-site 'Who's Who' database") + #note on bottom-left
   theme(plot.title = element_text(hjust = 0.5, vjust = 5, face = "bold"), #central + heighten + bold the title
         plot.margin = unit(c(1, 1, 1, 1), "cm"),  #create margin for the graph
         axis.title.x = element_text(vjust= -2), #lower the label of x-axis
         axis.title.y = element_text(vjust= 8), #shift the label of y-axis to the left
         plot.caption = element_text(vjust= -3, face = "italic")) #lower the caption + change caption's font into italic
+
 
 
 
