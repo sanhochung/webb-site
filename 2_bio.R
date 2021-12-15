@@ -6,7 +6,7 @@ library(rvest)
 library(dplyr)
 library(tidyverse)
 library(reshape2)
-
+library(naniar)
 
 #################2. biographical (sex, birth and death) information################
 bio = data.frame()
@@ -95,9 +95,12 @@ bio_full <- filter(bio_full, var != "HKID")
 #delete column "number"
 bio_full1 <- bio_full[, c("name","var","value"), drop = TRUE]
 
+#de-duplicate repeated items
+bio_full1 <- distinct(bio_full1)
+
 #convert "var" into columns
 bio_full2 <- bio_full1 %>% pivot_wider(names_from = var,
                                      values_from = value)
 
 #save the cleaned file
-write_csv(bio_full, "webb_bio.csv")
+write_csv(bio_full2,"webb_bio.csv")
