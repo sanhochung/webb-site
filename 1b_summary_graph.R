@@ -57,15 +57,14 @@ memb_g <- memb[is.na(memb$end_year) == FALSE,]
 #e.g. from 2001 to 2004, it would be c(2001, 2002, 2003, 2004)
 #WARNING: it will take about 10 mins to run this loop. 
 #To skip this part you can just load the file "memb_year_graph.csv" as "custom")
-#custom <- c()
-#for (i in seq_along(along.with = memb_g$start_year))
-#{
-#  custom <- c(custom, memb_g$start_year[i]:memb_g$end_year[i])
-#  print(paste("done:", i))
-#}
+custom <- c()
+for (i in seq_along(along.with = memb_g$start_year))
+{
+  custom <- c(custom, memb_g$start_year[i]:memb_g$end_year[i])
+  print(paste("done:", i))
+}
 
-#save the list
-#write_csv(as.data.frame(custom), "memb_year_graph.csv")
+#write_csv(as.data.frame(custom), "memb_year_graph.csv") #save the list
 
 #plot the histogram, but it seems that the range is too large
 hist(custom)
@@ -77,16 +76,19 @@ custom1960 <- custom[custom >= 1960]
 
 options(scipen=999)#to avoid scientific notation
 
+#this is exported as "memb_summary.pdf"
 ggplot(as.data.frame(custom1960), aes(x = as.data.frame(custom1960)[,1])) + 
   geom_histogram(binwidth = 1,
                  color="black", 
                  fill="white") + 
-  xlim(c(1960, 2021)) + 
+  xlim(1960, 2021) + 
   labs(title = "Active Memberships of 'Who's Who' from 1960",
        x = "Year",
        y = "Number of Active Memberships",
        caption = "Source: Webb-site 'Who's Who' database") +
   theme(plot.title = element_text(hjust = 0.5, vjust = 5, face = "bold"), #central + heighten + bold the title
-        plot.margin = unit(c(1, 1, 1, 1), "cm"),  #create margin for the graph
+        plot.margin = unit(c(1, 1, 1, 1), "cm"),#create margin for the graph
+        axis.title.x = element_text(vjust= -1), #lower the label of x-axis
+        axis.title.y = element_text(vjust= 8), #shift the label of y-axis to the left
         plot.caption = element_text(vjust= -3, face = "italic")) #lower the caption + change caption's font into italic
 
